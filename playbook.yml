@@ -31,7 +31,7 @@
         name: ias
         shell: /bin/bash
         create_home: yes
-        password: "{{ 'VjfRE90p' | password_hash('sha512') }}"
+        password: "{{ 'pass' | password_hash('sha512') }}"
 
 
     - name: Настройка доступа по паролю для пользователя ias
