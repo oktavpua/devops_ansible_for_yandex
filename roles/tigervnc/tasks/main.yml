@@ -1,0 +1,66 @@
+---
+- name: Обновить списки пакетов
+  apt:
+    update_cache: yes
+
+- name: Install XFCE
+  apt:
+    pkg:
+      - xserver-xorg
+      - xfonts-base
+      - task-xfce-desktop
+      - dbus-x11
+    state: latest
+
+- name: Check the uptime
+  shell: uptime
+  register: UPTIME_PRE_REBOOT
+
+- debug: msg={{UPTIME_PRE_REBOOT.stdout}}
+
+- name: Unconditionally reboot the machine with all defaults
+  reboot:
+
+- name: Check the uptime after reboot
+  shell: uptime
+  register: UPTIME_POST_REBOOT
+
+- debug: msg={{UPTIME_POST_REBOOT.stdout}}
+
+- name: Install VNC server
+  apt:
+    pkg:
+      - tigervnc-standalone-server
+      - tigervnc-common
+    state: latest
+
+- name: Создать каталог /home/ias/.vnc
+  ansible.builtin.file:
+    path: /home/ias/.vnc
+    state: directory
+    owner: ias
+    group: ias
+    mode: '0755'
+
+- name: Создать текстовый файл с содержимым
+  ansible.builtin.lineinfile:
+    path: '/etc/tigervnc/vncserver.users'
+    line: ':1=ias'
+    insertafter: EOF
+
+- name: Создание пароля для VNC сервера
+  ansible.builtin.shell: printf "VjfRE90p\nVjfRE90p\n" | vncpasswd -f > /home/ias/.vnc/passwd
+  become: yes
+  become_user: ias
+
+- name: Создание конфига VNC
+  ansible.builtin.shell: |
+    echo "localhost=yes" > /home/ias/.vnc/config
+    echo "SecurityTypes=none" >> /home/ias/.vnc/config
+  become: yes
+  become_user: ias
+
+
+- name: Скачивание файла-настройки для создания правила poolkit
+  copy: src=02-allow-colord.rules dest=/etc/polkit-1/rules.d/ 
+#  ansible.builtin.command: wget http://192.168.1.95:9000/tigervnc/02-allow-colord.rules -P /etc/polkit-1/rules.d/

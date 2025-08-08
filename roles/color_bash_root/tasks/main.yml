@@ -1,0 +1,6 @@
+---
+- name: Настройка color bash для root
+  ansible.builtin.lineinfile:
+    path: '/etc/bash.bashrc'
+    line: 'export PS1="\[\e[1;31m\]\u@\h:\[\e[31m\]\w\[\e[33m\]\$ \[\e[m\]"'
+    insertafter: EOF

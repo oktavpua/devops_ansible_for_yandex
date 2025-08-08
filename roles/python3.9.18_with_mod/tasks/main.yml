@@ -1,0 +1,22 @@
+---
+- name: Скачивание архива с Python 3.9.18
+  ansible.builtin.command: wget https://www.python.org/ftp/python/3.9.18/Python-3.9.18.tgz -P /opt
+
+- name: Unarchive Python archive
+  unarchive:
+    src: /opt/Python-3.9.18.tgz
+    dest: /opt
+    remote_src: true
+
+
+- name: Подготовка к установке Python
+  ansible.builtin.shell: |
+    cd /opt/Python-3.9.18
+    ./configure --enable-optimizations
+    make altinstall
+
+
+- name: Установка Python модулей
+  ansible.builtin.shell: pip3.9 install -U pip numpy numba scipy websockets nest_asyncio
+  become: yes
+  become_user: ias

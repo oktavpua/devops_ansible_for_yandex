@@ -1,0 +1,5 @@
+---
+- name: Перезагрузка демона TigerVNC
+  systemd_service:
+    name: 'tigervncserver@:1'
+    state: restarted

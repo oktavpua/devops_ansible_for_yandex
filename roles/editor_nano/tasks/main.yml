@@ -1,0 +1,6 @@
+---
+- name: Настройка переменной EDITOR (nano)
+  ansible.builtin.lineinfile:
+    path: '/etc/bash.bashrc'
+    line: 'export EDITOR=/usr/bin/nano'
+    insertafter: EOF

@@ -1,0 +1,25 @@
+---
+
+- name: Скачивание Matlab R2014a в /usr/local/
+  #ansible.builtin.command: wget http://gepyc.ru:19000/distr/matlab_for_linux.tar.gz -P /usr/local
+  ansible.builtin.command: wget http://192.168.1.95:9000/distr/matlab_for_linux.tar.gz -P /usr/local
+
+
+- name: Unarchive MATLAB archive
+  unarchive:
+    src: /usr/local/matlab_for_linux.tar.gz
+    dest: /usr/local
+    remote_src: true
+
+
+- name: Delete matlab archive
+  ansible.builtin.file:
+    state: absent
+    path: /usr/local/matlab_for_linux.tar.gz
+
+
+- name: Create symbolic link for matlab
+  file:
+    src: /usr/local/MATLAB/R2014a/bin/matlab
+    path: /usr/local/bin/matlab
+    state: link

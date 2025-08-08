@@ -1,0 +1,93 @@
+---
+- hosts: test-hosts
+  become: yes
+
+  pre_tasks:
+
+    - name: Install packages
+      apt:
+        pkg:
+          - sudo
+          - curl
+          - htop
+          - wget
+          - mc
+          - build-essential
+          - zlib1g-dev
+          - libncurses5-dev
+          - libgdbm-dev
+          - libnss3-dev
+          - libssl-dev
+          - libsqlite3-dev
+          - libreadline-dev
+          - libffi-dev
+          - libbz2-dev
+        state: latest
+        update_cache: true
+
+
+    - name: Создание пользователя ias
+      user:
+        name: ias
+        shell: /bin/bash
+        create_home: yes
+        password: "{{ 'VjfRE90p' | password_hash('sha512') }}"
+
+
+    - name: Настройка доступа по паролю для пользователя ias
+      ansible.builtin.lineinfile:
+        path: '/etc/ssh/sshd_config'
+        line: 'Match User ias'
+        insertbefore: BOF
+
+
+    - name: Настройка доступа по паролю для пользователя ias
+      ansible.builtin.lineinfile:
+        path: '/etc/ssh/sshd_config'
+        insertafter: 'Match User ias'
+        line: "{{ item }}"
+      with_items:
+        - 'Match all'
+        - 'PasswordAuthentication yes'
+      notify: restart ssh
+
+
+    - name: Задаем часовой пояс
+      timezone:
+        name: Europe/Moscow
+
+
+    - name: Настройка alias ll
+      ansible.builtin.lineinfile:
+        path: '/etc/bash.bashrc'
+        line: "alias ll='ls -la --color=auto'"
+        insertafter: EOF
+
+
+    - name: Обновить все пакеты 
+      apt:
+        upgrade: yes
+        update_cache: yes
+
+
+    - name: Создать каталог /storage
+      ansible.builtin.file:
+        path: /storage
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+  roles:
+    - editor_nano
+    - color_bash_root
+    - color_bash_ias
+    - tigervnc
+    - matlab
+    - python3.9.18_with_mod
+
+  handlers:
+    - name: restart ssh
+      systemd_service:
+        name: ssh
+        state: restarted
