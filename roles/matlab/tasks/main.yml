@@ -1,8 +1,7 @@
 ---
 
 - name: Скачивание Matlab R2014a в /usr/local/
-  #ansible.builtin.command: wget http://gepyc.ru:19000/distr/matlab_for_linux.tar.gz -P /usr/local
-  ansible.builtin.command: wget http://192.168.1.95:9000/distr/matlab_for_linux.tar.gz -P /usr/local
+  ansible.builtin.command: wget http://<minio_url>:9000/distr/matlab_for_linux.tar.gz -P /usr/local
 
 
 - name: Unarchive MATLAB archive
