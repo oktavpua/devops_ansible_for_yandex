@@ -49,7 +49,7 @@
     insertafter: EOF
 
 - name: Создание пароля для VNC сервера
-  ansible.builtin.shell: printf "VjfRE90p\nVjfRE90p\n" | vncpasswd -f > /home/ias/.vnc/passwd
+  ansible.builtin.shell: printf "pass\npass\n" | vncpasswd -f > /home/ias/.vnc/passwd
   become: yes
   become_user: ias
 
@@ -59,8 +59,10 @@
     echo "SecurityTypes=none" >> /home/ias/.vnc/config
   become: yes
   become_user: ias
+  notify:
+    - enable tigervnc
+    - restart tigervnc
 
 
 - name: Скачивание файла-настройки для создания правила poolkit
-  copy: src=02-allow-colord.rules dest=/etc/polkit-1/rules.d/ 
-#  ansible.builtin.command: wget http://192.168.1.95:9000/tigervnc/02-allow-colord.rules -P /etc/polkit-1/rules.d/
+  copy: src=02-allow-colord.rules dest=/etc/polkit-1/rules.d/
