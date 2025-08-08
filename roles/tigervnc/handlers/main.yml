@@ -3,3 +3,8 @@
   systemd_service:
     name: 'tigervncserver@:1'
     state: restarted
+
+- name: enable tigervnc  
+  systemd_service:    
+    name: 'tigervncserver@:1'    
+    enabled: true
